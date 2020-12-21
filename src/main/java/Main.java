@@ -20,7 +20,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 public class Main {
 	// path to input/output file
-	private static final String INPUT = "egov-final.txt";
+	private static final String INPUT = "wikivote.txt";
 	private static final String OUTPUT = "output.txt";
 
 	// list to store edges
@@ -36,15 +36,24 @@ public class Main {
 
 	// main function
 	public static void main(String[] args) throws Exception {
+		int mb = 1024 * 1024;
+		// Getting the runtime reference from system
+		Runtime runtime = Runtime.getRuntime();
+		System.out.println("##### Heap utilization statistics [MB] #####");
+
 		Main main = new Main();
 		long start = System.currentTimeMillis();
 		main.init();
 		main.readFile();
 		main.loadData();
+//		System.out.println(main.edgeList.size());
 		main.compute();
 		long end = System.currentTimeMillis();
 		System.out.println(end - start);
 		main.writeFile();
+
+		// Print used memory
+		System.out.println("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb);
 	}
 
 	// initialize
@@ -102,7 +111,7 @@ public class Main {
 
 		Files.write(path, lines);
 
-		//writeXLSFile(sortedMap);
+		// writeXLSFile(sortedMap);
 	}
 
 	// push value to map
@@ -113,13 +122,12 @@ public class Main {
 		adjList.get(start).add(end);
 	}
 
-
 	public void compute() {
 		int k = 0;
 
 		while (vertexQueue.size() != 0) {
 			Vertex current = vertexQueue.poll();
-			
+
 			if (degrees.get(current.getVertex()) < current.getDegree()) {
 				continue;
 			}
